@@ -3,7 +3,6 @@ package com.ayundao.controller;
 import com.ayundao.base.BaseController;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * @ClassName: IndexController
@@ -17,7 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class IndexController extends BaseController {
 
     @GetMapping
-    public @ResponseBody String index() {
+    public String index() {
         return "index";
     }
 

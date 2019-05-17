@@ -13,6 +13,9 @@ spring:
     host: localhost
 
 
+  mvc:
+    view:
+      suffix: .html
   freemarker:
     enabled: true
     cache: false
