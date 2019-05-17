@@ -2,9 +2,8 @@ package com.ayundao.entity;
 
 import com.ayundao.base.BaseEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -24,20 +23,27 @@ public class UserGroup extends BaseEntity<UUID> {
     /**
      * 名称
      */
-    @Column(name = "NAME", nullable = false, length = 30)
+    @Column(name = "NAME", nullable = false, length = 50)
     private String name;
 
     /**
      * 负责人
      */
-    @Column(name = "USER_ID")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "USERID")
     private User user;
 
     /**
      * 父级--用户组
      */
-    @Column(name = "FATHER_ID")
+    @Column(name = "FATHERID")
     private UserGroup father;
+
+    /**
+     * 用户组关系
+     */
+    @OneToMany(mappedBy = "userGroup", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<UserGroupRelation> userGroupRelations;
 
     /**
      * 备用字段1

@@ -4,11 +4,20 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 
+import com.ayundao.base.utils.RedisUtils;
 import com.ayundao.base.utils.SpringUtils;
+import com.ayundao.entity.User;
+import com.ayundao.service.RedisServcie;
+import com.sun.deploy.net.HttpResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpRequest;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
 import org.springframework.util.Assert;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -23,7 +32,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
  * @Description: Controller - 基类
  * @Version: V1.0
  */
-public class BaseController {
+public abstract class BaseController {
 
     /**
      * 错误消息
@@ -53,6 +62,11 @@ public class BaseController {
     @Autowired
     private Validator validator;
 
+    @Autowired
+    private RedisServcie redisServcie;
+
+    private User user;
+
     /**
      * 数据验证
      *
@@ -63,7 +77,6 @@ public class BaseController {
      * @return 验证结果
      */
     protected boolean isValid(Object target, Class<?>... groups) {
-        Assert.notNull(target);
 
         Set<ConstraintViolation<Object>> constraintViolations = validator.validate(target, groups);
         if (constraintViolations.isEmpty()) {
@@ -84,7 +97,6 @@ public class BaseController {
      * @return 验证结果
      */
     protected boolean isValid(Collection<Object> targets, Class<?>... groups) {
-        Assert.notEmpty(targets);
 
         for (Object target : targets) {
             if (!isValid(target, groups)) {
@@ -108,8 +120,6 @@ public class BaseController {
      * @return 验证结果
      */
     protected boolean isValid(Class<?> type, String property, Object value, Class<?>... groups) {
-        Assert.notNull(type);
-        Assert.hasText(property);
 
         Set<?> constraintViolations = validator.validateValue(type, property, value, groups);
         if (constraintViolations.isEmpty()) {
@@ -132,8 +142,6 @@ public class BaseController {
      * @return 验证结果
      */
     protected boolean isValid(Class<?> type, Map<String, Object> properties, Class<?>... groups) {
-        Assert.notNull(type);
-        Assert.notEmpty(properties);
 
         for (Map.Entry<String, Object> entry : properties.entrySet()) {
             if (!isValid(type, entry.getKey(), entry.getValue(), groups)) {
@@ -167,10 +175,28 @@ public class BaseController {
      *            参数
      */
     protected void addFlashMessage(RedirectAttributes redirectAttributes, String message, Object... args) {
-        Assert.notNull(redirectAttributes);
-        Assert.hasText(message);
 
         redirectAttributes.addFlashAttribute(FLASH_MESSAGE_ATTRIBUTE_NAME, SpringUtils.getMessage(message, args));
     }
 
+    /**
+     * 存储当前用户
+     * @param req
+     * @param resp
+     * @param user
+     * @return
+     */
+    public User setCurrentUser(HttpServletRequest req, HttpServletResponse resp, User user) {
+        redisServcie.set("user:" + user.getAccount(), user.toString());
+        setUser(user);
+        return this.user;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 }

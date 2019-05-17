@@ -11,16 +11,14 @@ spring:
     port: 6379
     database: 0
     host: localhost
+    jedis:
+      pool:
+        max-active: 200
+        max-wait: -1ms
+        max-idle: 10
+        min-idle: 0
 
 
-  mvc:
-    view:
-      suffix: .html
-  freemarker:
-    enabled: true
-    cache: false
-    charset: UTF-8
-    suffix: .html
   jpa:
     database: mysql
     show-sql: true
@@ -32,3 +30,13 @@ spring:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     #选用Innodb
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+  mvc:
+    view:
+      suffix: .html
+  freemarker:
+    enabled: true
+    cache: false
+    charset: UTF-8
+    suffix: .html
+  profiles:
+    active: dev

@@ -1,7 +1,9 @@
 package com.ayundao.entity;
 
 import com.ayundao.base.BaseEntity;
+
 import javax.persistence.*;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -39,7 +41,7 @@ public class User extends BaseEntity<UUID> {
     /**
      * 密码盐
      */
-    @Column(name = "SALT", nullable = false, length = 8)
+    @Column(name = "SALT", nullable = false, length = 30)
     private String salt;
 
     /**
@@ -67,6 +69,12 @@ public class User extends BaseEntity<UUID> {
      */
     @Column(name = "REMARK", columnDefinition = "varchar(20) default '未填写'", length = 500)
     private String remark;
+
+    /**
+     * 用户 - 用户组
+     */
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<UserGroupRelation> userGroupRelations;
 
     /**
      * 备用字段1
@@ -201,5 +209,6 @@ public class User extends BaseEntity<UUID> {
     public void setRemark(String remark) {
         this.remark = remark;
     }
+
 
 }

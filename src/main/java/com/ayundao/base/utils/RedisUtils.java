@@ -3,6 +3,7 @@ package com.ayundao.base.utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.concurrent.TimeUnit;
  * redisUtil工具类
  *
  */
+@Component
 public class RedisUtils {
 
 	private static final Logger logger = LoggerFactory.getLogger(RedisUtils.class);

@@ -14,15 +14,7 @@ import java.util.UUID;
  * @Version: V1.0
  */
 @Entity
-@Table(name = "t_file_role")
-@SecondaryTables({
-        @SecondaryTable(name="t_user_group_relation", pkJoinColumns = {
-                @PrimaryKeyJoinColumn(name = "USERGROUPRELATIONID")
-        }),
-        @SecondaryTable(name="t_role", pkJoinColumns = {
-                @PrimaryKeyJoinColumn(name = "ROLEID")
-        })
-})
+@Table(name = "t_field_role")
 public class MenuRelation extends BaseEntity<UUID> {
 
     private static final long serialVersionUID = -1234798123749127L;

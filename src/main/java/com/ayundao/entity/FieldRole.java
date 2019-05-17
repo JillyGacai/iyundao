@@ -14,18 +14,7 @@ import java.util.UUID;
  * @Version: V1.0
  */
 @Entity
-@Table(name = "t_file_role")
-@SecondaryTables({
-        @SecondaryTable(name="t_field", pkJoinColumns = {
-                @PrimaryKeyJoinColumn(name = "FIELDID")
-        }),
-        @SecondaryTable(name="t_user_role", pkJoinColumns = {
-                @PrimaryKeyJoinColumn(name = "USERROLEID")
-        }),
-        @SecondaryTable(name="t_user_group_relation", pkJoinColumns = {
-                @PrimaryKeyJoinColumn(name = "USERGROUPRELATIONID")
-        })
-})
+@Table(name = "t_field_role")
 public class FieldRole extends BaseEntity<UUID> {
 
     private static final long serialVersionUID = -1237498712983479L;

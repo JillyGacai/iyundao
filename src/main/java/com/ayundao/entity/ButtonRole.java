@@ -16,17 +16,6 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "t_button_role")
-@SecondaryTables({
-        @SecondaryTable(name="t_button", pkJoinColumns = {
-                @PrimaryKeyJoinColumn(name = "BUTTONID")
-        }),
-        @SecondaryTable(name="t_user_relation", pkJoinColumns = {
-                @PrimaryKeyJoinColumn(name = "USERGROUPRELATIONID")
-        }),
-        @SecondaryTable(name="t_user_role", pkJoinColumns = {
-                @PrimaryKeyJoinColumn(name = "USERROLEID")
-        })
-})
 public class ButtonRole extends BaseEntity<UUID> {
 
     private static final long serialVersionUID = -4912830948120L;

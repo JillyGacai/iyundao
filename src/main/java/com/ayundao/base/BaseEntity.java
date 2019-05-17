@@ -1,20 +1,23 @@
 package com.ayundao.base;
 
+import com.ayundao.base.utils.ClassUtils;
 import com.ayundao.base.utils.TimeUtils;
 import com.fasterxml.jackson.annotation.JsonView;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.dom4j.tree.AbstractEntity;
 import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.search.annotations.*;
-import org.hibernate.search.annotations.Index;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
 import javax.validation.groups.Default;
 import java.io.Serializable;
-import java.time.LocalTime;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Entity - 基类
@@ -49,8 +52,8 @@ public abstract class BaseEntity<ID extends Serializable> implements Serializabl
 	 */
 	@JsonView(BaseView.class)
     @Id
-    @GeneratedValue(generator = "system-uuid")
-    @GenericGenerator(name = "system-uuid",
+    @GeneratedValue(generator = "jpa-uuid")
+    @GenericGenerator(name = "jpa-uuid",
             strategy = "uuid")
     @Column(name = "ID", length = 32)
 	private ID id;
@@ -164,7 +167,21 @@ public abstract class BaseEntity<ID extends Serializable> implements Serializabl
 	 */
 	@Override
 	public String toString() {
-		return String.format("Entity of type %s with id: %s", getClass().getName(), getId());
+        ToStringBuilder builder = new ToStringBuilder(this);
+        Iterator var3 = ClassUtils.getDeclaredFieldsWithSuper(this.getClass()).values().iterator();
+
+        while(var3.hasNext()) {
+            Field field = (Field)var3.next();
+            Class<? extends Object> typeClazz = field.getType();
+            if (!AbstractEntity.class.isAssignableFrom(typeClazz) && !Collection.class.isAssignableFrom(typeClazz) && !Map.class.isAssignableFrom(typeClazz)) {
+                int modifiers = field.getModifiers();
+                if (field.getName().indexOf(36) == -1 && !Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers)) {
+                    builder.append(field.getName(), ClassUtils.forceGetProperty(this, field.getName()));
+                }
+            }
+        }
+
+        return builder.toString();
 	}
 
 	/**

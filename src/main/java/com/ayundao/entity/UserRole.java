@@ -15,14 +15,6 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "t_user_role")
-@SecondaryTables({
-        @SecondaryTable(name="t_user", pkJoinColumns = {
-                @PrimaryKeyJoinColumn(name = "USERID"),
-        }),
-        @SecondaryTable(name="t_role", pkJoinColumns = {
-                @PrimaryKeyJoinColumn(name = "ROLEID")
-        })
-})
 public class UserRole extends BaseEntity<UUID> {
 
     private static final long serialVersionUID = -193279412739472L;
@@ -31,7 +23,7 @@ public class UserRole extends BaseEntity<UUID> {
      * 用户ID
      */
     @Column(name = "USERID")
-    private User user;
+    private String user;
 
     /**
      * 所属角色

@@ -15,20 +15,6 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "t_user_relations")
-@SecondaryTables({
-        @SecondaryTable(name="t_subject", pkJoinColumns = {
-                @PrimaryKeyJoinColumn(name = "SUBJECTID")
-        }),
-        @SecondaryTable(name="t_depart", pkJoinColumns = {
-                @PrimaryKeyJoinColumn(name = "DEPARTID")
-        }),
-        @SecondaryTable(name="t_groups", pkJoinColumns = {
-                @PrimaryKeyJoinColumn(name = "GROUPSID")
-        }),
-        @SecondaryTable(name="t_user", pkJoinColumns = {
-                @PrimaryKeyJoinColumn(name = "USERID")
-        })
-})
 public class UserRelation extends BaseEntity<UUID> {
 
     private static final long serialVersionUID = -1293749127349L;
@@ -55,7 +41,7 @@ public class UserRelation extends BaseEntity<UUID> {
      * 用户
      */
     @Column(name = "USERID")
-    private User user;
+    private String user;
 
     /**
      * 备用字段1
