@@ -2,10 +2,9 @@ package com.ayundao.entity;
 
 import com.ayundao.base.BaseEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.Max;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -18,7 +17,7 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "t_page")
-public class Page extends BaseEntity<UUID> {
+public class Page extends BaseEntity<String> {
 
     private static final long serivalVersionUID = -129034801289823L;
 
@@ -37,7 +36,8 @@ public class Page extends BaseEntity<UUID> {
     /**
      * 所属菜单
      */
-    @Column(name = "MENU_ID")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "MENUID")
     private Menu menu;
 
     /**
@@ -49,7 +49,8 @@ public class Page extends BaseEntity<UUID> {
     /**
      * 父级页面
      */
-    @Column(name = "FATHER_ID")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "FATHERID")
     private Page father;
 
     /**
@@ -58,6 +59,13 @@ public class Page extends BaseEntity<UUID> {
     @Max(2)
     @Column(name = "SORT", columnDefinition = "tinyint default 0")
     private int sort;
+
+    /**
+     * 字段
+     */
+    @OneToMany(mappedBy = "page", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<Field> fields;
+
 
     /**
      * 备用字段1

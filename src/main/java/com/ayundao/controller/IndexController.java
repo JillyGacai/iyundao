@@ -1,8 +1,8 @@
 package com.ayundao.controller;
 
 import com.ayundao.base.BaseController;
+import com.ayundao.base.annotation.Permission;
 import com.ayundao.base.utils.MD5Utils;
-import com.ayundao.base.utils.RedisUtils;
 import com.ayundao.entity.User;
 import com.ayundao.service.RedisServcie;
 import com.ayundao.service.UserService;
@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.UUID;
 
 /**
  * @ClassName: IndexController
@@ -34,13 +33,6 @@ public class IndexController extends BaseController {
     @Autowired
     private RedisServcie redisServcie;
 
-    public static void main(String[] args) {
-        String uuid = UUID.randomUUID().toString().replace("-", "").toString().substring(0, 17);
-        System.out.println(UUID.randomUUID().toString().replace("-", ""));
-        System.out.println(uuid);
-        System.out.println(MD5Utils.getSaltMD5("admin", uuid));
-    }
-
     /**
      * 首页
      * @return
@@ -57,17 +49,22 @@ public class IndexController extends BaseController {
      * @return
      */
     @PostMapping("/login")
+    @Permission
     public String login(String account, String password, Model model, HttpServletRequest req, HttpServletResponse resp) {
+        User user = getUser();
+        if (user != null) {
+            return "list";
+        }
         if (StringUtils.isNotBlank(account) && StringUtils.isNotBlank(password)) {
-            User user = userService.findByAccount(account);
+            user = userService.findByAccount(account);
             if (user == null) {
                 model.addAttribute(ERROR_MESSAGE, "用户名/密码不正确");
                 return "index";
             }
             password = MD5Utils.getSaltMD5(password, user.getSalt());
             if (password.equals(user.getPassword())) {
-                System.out.println(user.toString());
-//                setCurrentUser(req, resp, user);
+                //封装用户
+                setCurrentUser(req, resp, user);
                 return "list";
             }
         } else {
@@ -84,7 +81,6 @@ public class IndexController extends BaseController {
      */
     @PostMapping("/reg")
     public String register(String account, String password) {
-
         return "index";
     }
 

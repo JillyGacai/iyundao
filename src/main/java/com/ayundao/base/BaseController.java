@@ -9,12 +9,14 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 
+import com.ayundao.base.annotation.Permission;
 import com.ayundao.base.utils.RedisUtils;
 import com.ayundao.base.utils.SpringUtils;
 import com.ayundao.entity.User;
 import com.ayundao.service.RedisServcie;
 import com.sun.deploy.net.HttpResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
@@ -32,7 +34,14 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
  * @Description: Controller - 基类
  * @Version: V1.0
  */
+@Permission
+@Component
 public abstract class BaseController {
+
+    /**
+     * 角色验证
+     */
+    protected static final String AUTHOR_ROLE ="role";
 
     /**
      * 错误消息
@@ -61,19 +70,26 @@ public abstract class BaseController {
 
     @Autowired
     private Validator validator;
-
+    /**
+     * 用户组验证
+     */
+    protected static final String AUTHOR_USER_GROUP ="user.group";
+    /**
+     * 机构验证
+     */
+    protected static final String AUTHOR_SUBJECT ="subject";
+    @Value("${server.salt}")
+    private String salt;
     @Autowired
-    private RedisServcie redisServcie;
+    private RedisUtils redisUtils;
 
     private User user;
 
     /**
      * 数据验证
      *
-     * @param target
-     *            验证对象
-     * @param groups
-     *            验证组
+     * @param target 验证对象
+     * @param groups 验证组
      * @return 验证结果
      */
     protected boolean isValid(Object target, Class<?>... groups) {
@@ -90,10 +106,8 @@ public abstract class BaseController {
     /**
      * 数据验证
      *
-     * @param targets
-     *            验证对象
-     * @param groups
-     *            验证组
+     * @param targets 验证对象
+     * @param groups  验证组
      * @return 验证结果
      */
     protected boolean isValid(Collection<Object> targets, Class<?>... groups) {
@@ -109,14 +123,10 @@ public abstract class BaseController {
     /**
      * 数据验证
      *
-     * @param type
-     *            类型
-     * @param property
-     *            属性
-     * @param value
-     *            值
-     * @param groups
-     *            验证组
+     * @param type     类型
+     * @param property 属性
+     * @param value    值
+     * @param groups   验证组
      * @return 验证结果
      */
     protected boolean isValid(Class<?> type, String property, Object value, Class<?>... groups) {
@@ -133,12 +143,9 @@ public abstract class BaseController {
     /**
      * 数据验证
      *
-     * @param type
-     *            类型
-     * @param properties
-     *            属性
-     * @param groups
-     *            验证组
+     * @param type       类型
+     * @param properties 属性
+     * @param groups     验证组
      * @return 验证结果
      */
     protected boolean isValid(Class<?> type, Map<String, Object> properties, Class<?>... groups) {
@@ -154,10 +161,8 @@ public abstract class BaseController {
     /**
      * 获取国际化消息
      *
-     * @param code
-     *            代码
-     * @param args
-     *            参数
+     * @param code 代码
+     * @param args 参数
      * @return 国际化消息
      */
     protected String message(String code, Object... args) {
@@ -167,12 +172,9 @@ public abstract class BaseController {
     /**
      * 添加瞬时消息
      *
-     * @param redirectAttributes
-     *            RedirectAttributes
-     * @param message
-     *            消息
-     * @param args
-     *            参数
+     * @param redirectAttributes RedirectAttributes
+     * @param message            消息
+     * @param args               参数
      */
     protected void addFlashMessage(RedirectAttributes redirectAttributes, String message, Object... args) {
 
@@ -181,14 +183,21 @@ public abstract class BaseController {
 
     /**
      * 存储当前用户
+     *
      * @param req
      * @param resp
      * @param user
      * @return
      */
     public User setCurrentUser(HttpServletRequest req, HttpServletResponse resp, User user) {
-        redisServcie.set("user:" + user.getAccount(), user.toString());
+        //用户信息
+        redisUtils.set("user:" + user.getAccount(), user);
+        req.setAttribute("account", user.getAccount());
+        req.setAttribute("user", user);
         setUser(user);
+        //机构信息
+
+        //用户组信息
         return this.user;
     }
 

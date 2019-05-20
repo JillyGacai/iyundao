@@ -32,4 +32,13 @@ public class UserServiceImpl implements UserService {
     public User findByAccountAndPassword(String username, String password) {
         return userRepository.findByAccountAndPassword(username, password);
     }
+
+    @Override
+    public boolean isAdmin(String account) {
+        User user = userRepository.findByAccount(account);
+        if (user == null) {
+            return false;
+        } 
+        return user.getUserType().equals(User.USER_TYPE.amdin);
+    }
 }

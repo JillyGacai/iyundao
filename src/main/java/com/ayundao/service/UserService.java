@@ -2,6 +2,8 @@ package com.ayundao.service;
 
 import com.ayundao.entity.User;
 
+import java.util.Arrays;
+
 /**
  * @ClassName: UserService
  * @project: ayundao
@@ -26,4 +28,7 @@ public interface UserService {
      * @return
      */
     User findByAccountAndPassword(String username, String password);
+
+    //是否是管理员
+    boolean isAdmin(String account);
 }

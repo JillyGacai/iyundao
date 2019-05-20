@@ -1,6 +1,8 @@
 package com.ayundao.base.utils;
 
 import org.apache.shiro.codec.Hex;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -16,6 +18,8 @@ import java.util.UUID;
  * @Version: V1.0
  */
 public class MD5Utils {
+
+    private String salt;
 
     /**
      * 普通MD5加密 01

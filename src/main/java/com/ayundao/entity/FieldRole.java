@@ -15,26 +15,29 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "t_field_role")
-public class FieldRole extends BaseEntity<UUID> {
+public class FieldRole extends BaseEntity<String> {
 
     private static final long serialVersionUID = -1237498712983479L;
 
     /**
      * 所属字段
      */
-    @Column(name = "FIELDID")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "FIELDID")
     private Field field;
 
     /**
      * 所属用户组关系
      */
-    @Column(name = "USERGROUPRELATIONID")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "USERGROUPRELATIONID")
     private UserGroupRelation userGroupRelation;
 
     /**
      * 所属角色关系
      */
-    @Column(name = "USERROLEID")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "USERROLEID")
     private UserRole userRole;
 
     /**

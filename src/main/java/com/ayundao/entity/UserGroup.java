@@ -16,7 +16,7 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "t_user_group")
-public class UserGroup extends BaseEntity<UUID> {
+public class UserGroup extends BaseEntity<String> {
 
     private static final long serialVerisonUID = -129374981273498L;
 
@@ -36,7 +36,8 @@ public class UserGroup extends BaseEntity<UUID> {
     /**
      * 父级--用户组
      */
-    @Column(name = "FATHERID")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "FATHERID")
     private UserGroup father;
 
     /**

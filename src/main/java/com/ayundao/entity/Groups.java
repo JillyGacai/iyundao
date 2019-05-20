@@ -2,9 +2,8 @@ package com.ayundao.entity;
 
 import com.ayundao.base.BaseEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -17,7 +16,7 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "t_groups")
-public class Groups extends BaseEntity<UUID> {
+public class Groups extends BaseEntity<String> {
 
     private static final long serialVerisonUID = -10927349812794379L;
 
@@ -36,14 +35,22 @@ public class Groups extends BaseEntity<UUID> {
     /**
      * 所属机构
      */
-    @Column(name = "SUBJECT_ID")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "SUBJECTID")
     private Subject subject;
 
     /**
      * 负责人
      */
-    @Column(name = "USER_ID")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "USERID")
     private User user;
+
+    /**
+     * 组织/小组关系
+     */
+    @OneToMany(mappedBy = "groups", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<UserRelation> userRelations;
 
     /**
      * 备用字段1

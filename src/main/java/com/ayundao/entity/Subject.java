@@ -16,7 +16,7 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "t_subject")
-public class Subject extends BaseEntity<UUID> {
+public class Subject extends BaseEntity<String> {
 
     private static final long serialVersionUID = -129079014789123784L;
 
@@ -31,6 +31,24 @@ public class Subject extends BaseEntity<UUID> {
      */
     @Column(name = "SUBJECT_TYPE")
     private SUBJECT_TYPE subjectType;
+
+    /**
+     * 机构关系
+     */
+    @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<UserRelation> userRelations;
+
+    /**
+     * 行政/部门关系
+     */
+    @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<Depart> departs;
+
+    /**
+     * 组织/小组关系
+     */
+    @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<Groups> groups;
 
     /**
      * 备用字段1

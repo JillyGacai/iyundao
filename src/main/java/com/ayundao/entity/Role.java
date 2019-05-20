@@ -2,9 +2,8 @@ package com.ayundao.entity;
 
 import com.ayundao.base.BaseEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -17,7 +16,7 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "t_role")
-public class Role extends BaseEntity<UUID> {
+public class Role extends BaseEntity<String> {
 
     private static final long serialVersionUID = -12734987129347912l;
 
@@ -26,6 +25,18 @@ public class Role extends BaseEntity<UUID> {
      */
     @Column(name = "NAME", length = 30, nullable = false)
     private String name;
+
+    /**
+     * 菜单关系
+     */
+    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<MenuRelation> menuRelations;
+
+    /**
+     * 角色关系
+     */
+    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<UserRole> userRoles;
 
     /**
      * 备用字段1

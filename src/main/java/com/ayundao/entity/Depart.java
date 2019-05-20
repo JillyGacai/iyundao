@@ -2,9 +2,8 @@ package com.ayundao.entity;
 
 import com.ayundao.base.BaseEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -17,7 +16,7 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "t_depart")
-public class Depart extends BaseEntity<UUID> {
+public class Depart extends BaseEntity<String> {
 
     private static final long serialVerisonUID = -1294037981273498L;
 
@@ -30,20 +29,30 @@ public class Depart extends BaseEntity<UUID> {
     /**
      * 描述
      */
-    @Column(name = "SUBJECT_ID", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "SUBJECT_ID", nullable = false)
     private Subject subject;
 
     /**
      * 父级--部门
      */
-    @Column(name = "FATHER_ID")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "FATHERID")
     private Depart depart;
 
     /**
      * 负责人
      */
-    @Column(name = "USER_ID", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "USERID")
     private User user;
+
+
+    /**
+     * 部门关系
+     */
+    @OneToMany(mappedBy = "depart", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<UserRelation> userRelations;
 
     /**
      * 备用字段1
@@ -74,4 +83,84 @@ public class Depart extends BaseEntity<UUID> {
      */
     @Column(name = "INFO5")
     private String info5;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Subject getSubject() {
+        return subject;
+    }
+
+    public void setSubject(Subject subject) {
+        this.subject = subject;
+    }
+
+    public Depart getDepart() {
+        return depart;
+    }
+
+    public void setDepart(Depart depart) {
+        this.depart = depart;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Set<UserRelation> getUserRelations() {
+        return userRelations;
+    }
+
+    public void setUserRelations(Set<UserRelation> userRelations) {
+        this.userRelations = userRelations;
+    }
+
+    public String getInfo1() {
+        return info1;
+    }
+
+    public void setInfo1(String info1) {
+        this.info1 = info1;
+    }
+
+    public String getInfo2() {
+        return info2;
+    }
+
+    public void setInfo2(String info2) {
+        this.info2 = info2;
+    }
+
+    public String getInfo3() {
+        return info3;
+    }
+
+    public void setInfo3(String info3) {
+        this.info3 = info3;
+    }
+
+    public String getInfo4() {
+        return info4;
+    }
+
+    public void setInfo4(String info4) {
+        this.info4 = info4;
+    }
+
+    public String getInfo5() {
+        return info5;
+    }
+
+    public void setInfo5(String info5) {
+        this.info5 = info5;
+    }
 }

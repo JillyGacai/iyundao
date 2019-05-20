@@ -2,6 +2,7 @@ package com.ayundao.base.utils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -20,6 +21,7 @@ public class RedisUtils {
 
 	private static final Logger logger = LoggerFactory.getLogger(RedisUtils.class);
 
+	@Autowired
 	private RedisTemplate<String, Object> redisTemplate;
 
 	public void setRedisTemplate(RedisTemplate<String, Object> redisTemplate) {

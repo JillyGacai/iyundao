@@ -2,10 +2,9 @@ package com.ayundao.entity;
 
 import com.ayundao.base.BaseEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.Max;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -18,7 +17,7 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "t_button")
-public class Button extends BaseEntity<UUID> {
+public class Button extends BaseEntity<String> {
 
     private static final long serialVersionUID = -1234798213489L;
 
@@ -31,7 +30,8 @@ public class Button extends BaseEntity<UUID> {
     /**
      * 所属字段
      */
-    @Column(name = "FIELDID", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "FIELDID", nullable = false)
     private Field field;
 
     /**
@@ -46,6 +46,12 @@ public class Button extends BaseEntity<UUID> {
     @Max(2)
     @Column(name = "SORT", columnDefinition = "tinyint default 0")
     private int sort;
+
+    /**
+     * 按钮关系
+     */
+    @OneToMany(mappedBy = "button", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<ButtonRole> buttonRoles;
 
     /**
      * 备用字段1

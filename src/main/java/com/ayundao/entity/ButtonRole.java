@@ -16,26 +16,29 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "t_button_role")
-public class ButtonRole extends BaseEntity<UUID> {
+public class ButtonRole extends BaseEntity<String> {
 
     private static final long serialVersionUID = -4912830948120L;
 
     /**
      * 所属按钮
      */
-    @Column(name = "BUTTONID")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "BUTTONID")
     private Button button;
 
     /**
      * 所属用户组关系
      */
-    @Column(name = "USERGROUPRELATIONID")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "USERGROUPRELATIONID")
     private UserGroupRelation userGroupRelation;
 
     /**
      * 所属角色关系
      */
-    @Column(name = "USERROLEID")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "USERROLEID")
     private UserRole userRole;
 
     /**

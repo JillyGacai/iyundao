@@ -3,6 +3,7 @@ package com.ayundao.entity;
 import com.ayundao.base.BaseEntity;
 
 import javax.persistence.*;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -14,26 +15,36 @@ import java.util.UUID;
  * @Version: V1.0
  */
 @Entity
-@Table(name = "t_field_role")
-public class MenuRelation extends BaseEntity<UUID> {
+@Table(name = "t_menu_relations")
+public class MenuRelation extends BaseEntity<String> {
 
     private static final long serialVersionUID = -1234798123749127L;
 
     /**
-     * 用户路径
+     * 所属机构
      */
-    @Column(name = "URI")
-    private String uri;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "USERRELATIONID")
+    private UserRelation userRelation;
 
     /**
      * 用户组ID
      */
-    @Column(name = "USERGROUPRELATIONID")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "USERGROUPRELATIONID")
     private UserGroupRelation userGroupRelation;
 
     /**
      * 所属角色
      */
-    @Column(name = "ROLEID")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ROLEID")
     private Role role;
+
+    /**
+     * 菜单
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "MENUID")
+    private Menu menu;
 }

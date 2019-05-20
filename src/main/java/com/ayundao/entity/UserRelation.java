@@ -3,6 +3,7 @@ package com.ayundao.entity;
 import com.ayundao.base.BaseEntity;
 
 import javax.persistence.*;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -15,33 +16,43 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "t_user_relations")
-public class UserRelation extends BaseEntity<UUID> {
+public class UserRelation extends BaseEntity<String> {
 
     private static final long serialVersionUID = -1293749127349L;
 
     /**
      * 所属机构
      */
-    @Column(name = "SUBJECTID")
-    private Subject subjects;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "SUBJECTID")
+    private Subject subject;
 
     /**
      * 所属部门
      */
-    @Column(name = "DEPARTID")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "DEPARTID")
     private Depart depart;
 
     /**
      * 所属小组
      */
-    @Column(name = "GROUPSID")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "GROUPSID")
     private Groups groups;
 
     /**
      * 用户
      */
-    @Column(name = "USERID")
-    private String user;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "USERID")
+    private User user;
+
+    /**
+     * 菜单关系
+     */
+    @OneToMany(mappedBy = "userRelation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<MenuRelation> menuRelations;
 
     /**
      * 备用字段1

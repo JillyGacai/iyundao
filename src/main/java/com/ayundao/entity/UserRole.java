@@ -3,6 +3,7 @@ package com.ayundao.entity;
 import com.ayundao.base.BaseEntity;
 
 import javax.persistence.*;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -15,21 +16,36 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "t_user_role")
-public class UserRole extends BaseEntity<UUID> {
+public class UserRole extends BaseEntity<String> {
 
     private static final long serialVersionUID = -193279412739472L;
 
     /**
      * 用户ID
      */
-    @Column(name = "USERID")
-    private String user;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "USERID")
+    private User user;
 
     /**
      * 所属角色
      */
-    @Column(name = "ROLEID")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ROLEID")
     private Role role;
+
+    /**
+     * 字段关系
+     */
+    @OneToMany(mappedBy = "userRole", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<FieldRole> fieldRoles;
+
+    /**
+     * 字段关系
+     */
+    @OneToMany(mappedBy = "userRole", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<ButtonRole> buttonRoles;
+
 
     /**
      * 备用字段1

@@ -3,6 +3,7 @@ package com.ayundao.base;
 import com.ayundao.base.utils.ClassUtils;
 import com.ayundao.base.utils.TimeUtils;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.sun.xml.internal.bind.v2.model.core.ID;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.logging.Log;
@@ -15,10 +16,7 @@ import javax.validation.groups.Default;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Entity - 基类
@@ -49,16 +47,6 @@ public abstract class BaseEntity<ID extends Serializable> implements Serializabl
     @Transient
     protected final transient Log logger = LogFactory.getLog(this.getClass());
     /**
-     * ID
-     */
-    @JsonView(BaseView.class)
-    @Id
-    @GeneratedValue(generator = "jpa-uuid")
-    @GenericGenerator(name = "jpa-uuid",
-            strategy = "uuid")
-    @Column(name = "ID", length = 32)
-    private ID id;
-    /**
      * 创建日期
      */
     @Column(name = "CREATEDATE", nullable = false, updatable = false)
@@ -68,6 +56,15 @@ public abstract class BaseEntity<ID extends Serializable> implements Serializabl
      */
     @Column(name = "LASTMODIFIEDTIME", nullable = false)
     private String lastModifiedDate;
+    /**
+     * ID
+     */
+    @Id
+    @GeneratedValue(generator = "jpa-uuid")
+    @GenericGenerator(name = "jpa-uuid",
+            strategy = "uuid")
+    @Column(name = "ID", length = 32)
+    private ID id;
     /**
      * 版本
      */
@@ -83,7 +80,7 @@ public abstract class BaseEntity<ID extends Serializable> implements Serializabl
      * @return ID
      */
     public ID getId() {
-        return id;
+        return (ID) id.toString().replace("-", "");
     }
 
     /**
@@ -92,7 +89,7 @@ public abstract class BaseEntity<ID extends Serializable> implements Serializabl
      * @param id ID
      */
     private void setId(ID id) {
-        this.id = id;
+        this.id = (ID)id.toString().replace("-", "");
     }
 
     /**

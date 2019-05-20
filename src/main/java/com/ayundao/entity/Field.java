@@ -2,10 +2,9 @@ package com.ayundao.entity;
 
 import com.ayundao.base.BaseEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.Max;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -18,7 +17,7 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "t_field")
-public class Field extends BaseEntity<UUID> {
+public class Field extends BaseEntity<String> {
 
     private static final long serialVerisonUID = -1247192843712987834L;
 
@@ -29,10 +28,11 @@ public class Field extends BaseEntity<UUID> {
     private String name;
 
     /**
-     * 所属菜单
+     * 所属页面
      */
-    @Column(name = "MENU_ID", nullable = false)
-    private Menu menu;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "PAGEID", nullable = false)
+    private Page page;
 
     /**
      * 排序
@@ -40,6 +40,18 @@ public class Field extends BaseEntity<UUID> {
     @Max(2)
     @Column(name = "SORT", columnDefinition = "tinyint default 0")
     private int sort;
+
+    /**
+     * 字段关系
+     */
+    @OneToMany(mappedBy = "field", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<FieldRole> fieldRoles;
+
+    /**
+     * 按钮
+     */
+    @OneToMany(mappedBy = "field", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<Button> buttons;
 
     /**
      * 备用字段1

@@ -2,9 +2,8 @@ package com.ayundao.entity;
 
 import com.ayundao.base.BaseEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -17,7 +16,7 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "t_menu")
-public class Menu extends BaseEntity<UUID> {
+public class Menu extends BaseEntity<String> {
 
     private static final long serialVersionUID = -12374981274912789L;
 
@@ -26,12 +25,6 @@ public class Menu extends BaseEntity<UUID> {
      */
     @Column(name = "NAME", nullable = false, length = 30)
     private String name;
-
-    /**
-     * 负责人
-     */
-    @Column(name = "USER_ID", nullable = false)
-    private User user;
 
     /**
      * 描述
@@ -54,8 +47,21 @@ public class Menu extends BaseEntity<UUID> {
     /**
      * 父级--菜单
      */
-    @Column(name = "FATHER_ID")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "FATHERID")
     private Menu father;
+
+    /**
+     * 菜单关系
+     */
+    @OneToMany(mappedBy = "menu", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<MenuRelation> menuRelations;
+
+    /**
+     * 页面
+     */
+    @OneToMany(mappedBy = "menu", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<Page> pages;
 
     /**
      * 备用字段1

@@ -16,7 +16,7 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "t_user")
-public class User extends BaseEntity<UUID> {
+public class User extends BaseEntity<String> {
 
     private static final long serialVersionUID = -1172094710974098503L;
 
@@ -71,10 +71,34 @@ public class User extends BaseEntity<UUID> {
     private String remark;
 
     /**
-     * 用户 - 用户组
+     * 机构关系
+     */
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<UserRelation> userRelations;
+
+    /**
+     * 用户组关系
      */
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<UserGroupRelation> userGroupRelations;
+
+    /**
+     * 角色关系
+     */
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<UserRole> userRoles;
+
+    /**
+     * 部门负责人
+     */
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<Depart> departs;
+
+    /**
+     * 小组负责人
+     */
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<Groups> groups;
 
     /**
      * 备用字段1
@@ -209,6 +233,5 @@ public class User extends BaseEntity<UUID> {
     public void setRemark(String remark) {
         this.remark = remark;
     }
-
 
 }
