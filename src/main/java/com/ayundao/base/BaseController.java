@@ -20,6 +20,7 @@ import com.ayundao.service.UserGroupRelationService;
 import com.ayundao.service.UserRelationService;
 import com.ayundao.service.UserRoleService;
 import com.ayundao.service.UserService;
+import org.hibernate.Session;
 import org.hibernate.usertype.UserType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -291,6 +292,18 @@ public abstract class BaseController {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    /**
+     * 退出登录注销数据
+     */
+    public void loginOut(User user) {
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        HttpServletRequest request = attributes.getRequest();
+        request.getSession().removeAttribute("i-YunDao-account");
+        redisUtils.del("user:" + user.getAccount());
+        setUser(null);
+        this.user = null;
     }
 
 }

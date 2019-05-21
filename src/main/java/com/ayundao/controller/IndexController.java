@@ -90,14 +90,14 @@ public class IndexController extends BaseController {
 
     /**
      * 退出登录
-     * @param account
-     * @param password
-     * @param model
      * @return
      */
     @PostMapping("/loginout")
-    public String loginout(String account, String password, Model model) {
-
+    public String out() {
+        User user = getUser();
+        if (user != null) {
+            loginOut(user);
+        }
         return "index";
     }
 
