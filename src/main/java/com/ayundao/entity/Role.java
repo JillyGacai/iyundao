@@ -68,4 +68,27 @@ public class Role extends BaseEntity<String> {
     @Column(name = "INFO5")
     private String info5;
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Set<MenuRelation> getMenuRelations() {
+        return menuRelations;
+    }
+
+    public void setMenuRelations(Set<MenuRelation> menuRelations) {
+        this.menuRelations = menuRelations;
+    }
+
+    public Set<UserRole> getUserRoles() {
+        return userRoles;
+    }
+
+    public void setUserRoles(Set<UserRole> userRoles) {
+        this.userRoles = userRoles;
+    }
 }

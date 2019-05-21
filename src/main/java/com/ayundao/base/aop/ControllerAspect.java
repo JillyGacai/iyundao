@@ -4,7 +4,6 @@ import com.ayundao.base.annotation.Permission;
 import com.ayundao.service.RedisServcie;
 import com.ayundao.service.UserService;
 import org.apache.commons.lang.StringUtils;
-import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
@@ -16,11 +15,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 
 /**
@@ -44,13 +42,9 @@ public class ControllerAspect {
     @Autowired
     private RedisServcie redisServcie;
 
-    private List<String> normal = new ArrayList<>();
+    private ModelAndView modelAndView = new ModelAndView();
 
-    public static void main(String[] args) {
-        for (int i = 0; i < 100; i++) {
-            System.out.println(UUID.randomUUID().toString().replace("-", ""));
-        }
-    }
+    private List<String> normal = new ArrayList<>();
 
     /**
      *
@@ -61,12 +55,11 @@ public class ControllerAspect {
 
     /**
      * 权限环绕通知
-     * @param joinPoint
      * @throws Throwable
      */
     @ResponseBody
     @Around("author(permission)")
-    public Object isAccessMethod(ProceedingJoinPoint joinPoint, Permission permission) {
+    public String isAccessMethod(Permission permission) {
         System.out.println("---------方法执行之前-------------");
         try {
             HttpServletRequest req = getCurrentRequest();
@@ -79,18 +72,14 @@ public class ControllerAspect {
                 }
             }
             if (!flag) {
-                account = req.getAttribute("account") != null
-                        ? req.getAttribute("account").toString()
+                account = req.getSession().getAttribute("account") != null
+                        ? req.getSession().getAttribute("account").toString()
                         : account;
-                if (StringUtils.isNotBlank(account)) {
-
+                if (StringUtils.isBlank(account)) {
+                    return "index";
                 }
+                return req.getRequestURI();
             }
-            // 执行原方法，并记录返回值。
-//            if (StringUtils.isBlank(account)) {
-//                return "index";
-//            }
-            return joinPoint.proceed();
         } catch (Throwable throwable) {
             throwable.printStackTrace();
         }

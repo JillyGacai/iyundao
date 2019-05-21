@@ -1,17 +1,20 @@
 package com.ayundao.controller;
 
 import com.ayundao.base.BaseController;
-import com.ayundao.base.annotation.Permission;
-import com.ayundao.base.utils.MD5Utils;
+import com.ayundao.base.utils.EncryptUtils;
+import com.ayundao.base.utils.JsonUtils;
 import com.ayundao.entity.User;
 import com.ayundao.service.RedisServcie;
 import com.ayundao.service.UserService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -24,7 +27,8 @@ import javax.servlet.http.HttpServletResponse;
  * @Description: 首页
  * @Version: V1.0
  */
-@Controller("/")
+@Controller
+@RequestMapping("/")
 public class IndexController extends BaseController {
 
     @Autowired
@@ -49,11 +53,10 @@ public class IndexController extends BaseController {
      * @return
      */
     @PostMapping("/login")
-    @Permission
     public String login(String account, String password, Model model, HttpServletRequest req, HttpServletResponse resp) {
         User user = getUser();
         if (user != null) {
-            return "list";
+            return "redirect:/subject/list";
         }
         if (StringUtils.isNotBlank(account) && StringUtils.isNotBlank(password)) {
             user = userService.findByAccount(account);
@@ -61,17 +64,18 @@ public class IndexController extends BaseController {
                 model.addAttribute(ERROR_MESSAGE, "用户名/密码不正确");
                 return "index";
             }
-            password = MD5Utils.getSaltMD5(password, user.getSalt());
+            password = EncryptUtils.getSaltMD5(password, user.getSalt());
             if (password.equals(user.getPassword())) {
                 //封装用户
                 setCurrentUser(req, resp, user);
-                return "list";
+                return "redirect:/subject/list";
             }
         } else {
             model.addAttribute(ERROR_MESSAGE, "用户名/密码不能异常");
         }
         return "index";
     }
+
 
     /**
      * 注册
@@ -96,4 +100,5 @@ public class IndexController extends BaseController {
 
         return "index";
     }
+
 }

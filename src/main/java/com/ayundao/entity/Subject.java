@@ -97,4 +97,43 @@ public class Subject extends BaseEntity<String> {
         etc
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public SUBJECT_TYPE getSubjectType() {
+        return subjectType;
+    }
+
+    public void setSubjectType(SUBJECT_TYPE subjectType) {
+        this.subjectType = subjectType;
+    }
+
+    public Set<UserRelation> getUserRelations() {
+        return userRelations;
+    }
+
+    public void setUserRelations(Set<UserRelation> userRelations) {
+        this.userRelations = userRelations;
+    }
+
+    public Set<Depart> getDeparts() {
+        return departs;
+    }
+
+    public void setDeparts(Set<Depart> departs) {
+        this.departs = departs;
+    }
+
+    public Set<Groups> getGroups() {
+        return groups;
+    }
+
+    public void setGroups(Set<Groups> groups) {
+        this.groups = groups;
+    }
 }

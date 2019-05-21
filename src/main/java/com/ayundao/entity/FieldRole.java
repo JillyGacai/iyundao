@@ -69,4 +69,28 @@ public class FieldRole extends BaseEntity<String> {
      */
     @Column(name = "INFO5")
     private String info5;
+
+    public Field getField() {
+        return field;
+    }
+
+    public void setField(Field field) {
+        this.field = field;
+    }
+
+    public UserGroupRelation getUserGroupRelation() {
+        return userGroupRelation;
+    }
+
+    public void setUserGroupRelation(UserGroupRelation userGroupRelation) {
+        this.userGroupRelation = userGroupRelation;
+    }
+
+    public UserRole getUserRole() {
+        return userRole;
+    }
+
+    public void setUserRole(UserRole userRole) {
+        this.userRole = userRole;
+    }
 }

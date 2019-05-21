@@ -82,4 +82,43 @@ public class Groups extends BaseEntity<String> {
     @Column(name = "INFO5")
     private String info5;
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    public Subject getSubject() {
+        return subject;
+    }
+
+    public void setSubject(Subject subject) {
+        this.subject = subject;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Set<UserRelation> getUserRelations() {
+        return userRelations;
+    }
+
+    public void setUserRelations(Set<UserRelation> userRelations) {
+        this.userRelations = userRelations;
+    }
 }

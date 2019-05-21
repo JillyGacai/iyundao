@@ -24,6 +24,12 @@ public class ClassUtils {
     private static final Logger logger = LoggerFactory.getLogger(ClassUtils.class);
 
     /**
+     * 不可实例化
+     */
+    private ClassUtils() {
+    }
+
+    /**
      * 强制获取字段的value
      * @param obj
      * @param name
@@ -69,7 +75,7 @@ public class ClassUtils {
      * @param clazz
      * @return
      */
-    public static Map<String, Field> getDeclaredFieldsWithSuper(Class<? extends BaseEntity> clazz) {
+    public static Map<String, Field> getDeclaredFieldsWithSuper(Class<? extends Object> clazz) {
         Class superClass = clazz.getSuperclass();
         List<Method> methods = getAllMethods(clazz);
         Map<String, Field> map = new LinkedHashMap<>();

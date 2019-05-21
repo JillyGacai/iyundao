@@ -82,4 +82,44 @@ public class Field extends BaseEntity<String> {
      */
     @Column(name = "INFO5")
     private String info5;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Page getPage() {
+        return page;
+    }
+
+    public void setPage(Page page) {
+        this.page = page;
+    }
+
+    public int getSort() {
+        return sort;
+    }
+
+    public void setSort(int sort) {
+        this.sort = sort;
+    }
+
+    public Set<FieldRole> getFieldRoles() {
+        return fieldRoles;
+    }
+
+    public void setFieldRoles(Set<FieldRole> fieldRoles) {
+        this.fieldRoles = fieldRoles;
+    }
+
+    public Set<Button> getButtons() {
+        return buttons;
+    }
+
+    public void setButtons(Set<Button> buttons) {
+        this.buttons = buttons;
+    }
 }

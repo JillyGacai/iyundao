@@ -75,4 +75,36 @@ public class UserGroup extends BaseEntity<String> {
      */
     @Column(name = "INFO5")
     private String info5;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public UserGroup getFather() {
+        return father;
+    }
+
+    public void setFather(UserGroup father) {
+        this.father = father;
+    }
+
+    public Set<UserGroupRelation> getUserGroupRelations() {
+        return userGroupRelations;
+    }
+
+    public void setUserGroupRelations(Set<UserGroupRelation> userGroupRelations) {
+        this.userGroupRelations = userGroupRelations;
+    }
 }

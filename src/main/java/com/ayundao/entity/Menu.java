@@ -93,5 +93,59 @@ public class Menu extends BaseEntity<String> {
     @Column(name = "INFO5")
     private String info5;
 
+    public String getName() {
+        return name;
+    }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    public boolean isPublic() {
+        return isPublic;
+    }
+
+    public void setPublic(boolean aPublic) {
+        isPublic = aPublic;
+    }
+
+    public String getUri() {
+        return uri;
+    }
+
+    public void setUri(String uri) {
+        this.uri = uri;
+    }
+
+    public Menu getFather() {
+        return father;
+    }
+
+    public void setFather(Menu father) {
+        this.father = father;
+    }
+
+    public Set<MenuRelation> getMenuRelations() {
+        return menuRelations;
+    }
+
+    public void setMenuRelations(Set<MenuRelation> menuRelations) {
+        this.menuRelations = menuRelations;
+    }
+
+    public Set<Page> getPages() {
+        return pages;
+    }
+
+    public void setPages(Set<Page> pages) {
+        this.pages = pages;
+    }
 }

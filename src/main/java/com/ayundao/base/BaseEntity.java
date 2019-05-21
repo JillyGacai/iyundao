@@ -2,8 +2,6 @@ package com.ayundao.base;
 
 import com.ayundao.base.utils.ClassUtils;
 import com.ayundao.base.utils.TimeUtils;
-import com.fasterxml.jackson.annotation.JsonView;
-import com.sun.xml.internal.bind.v2.model.core.ID;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.logging.Log;
@@ -13,8 +11,11 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import javax.validation.groups.Default;
+import java.io.File;
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
 
@@ -83,13 +84,26 @@ public abstract class BaseEntity<ID extends Serializable> implements Serializabl
         return (ID) id.toString().replace("-", "");
     }
 
-    /**
-     * 设置ID
-     *
-     * @param id ID
-     */
-    private void setId(ID id) {
-        this.id = (ID)id.toString().replace("-", "");
+    public static Object toEntity(String str, Object obj) {
+        Class cls = obj.getClass();
+        String[] arr = str.substring(str.indexOf("[") + 1, str.length() - 1).split(",");
+        Map<String, String> map = new HashMap<>();
+        for (String s : arr) {
+            String[] strArr = s.split("=");
+            map.put(strArr[0], strArr[1]);
+        }
+        Iterator var = ClassUtils.getDeclaredFieldsWithSuper(cls).values().iterator();
+        while (var.hasNext()) {
+            Field field = (Field) var.next();
+            Class<? extends Object> typeClazz = field.getType();
+            if (!AbstractEntity.class.isAssignableFrom(typeClazz) && !Collection.class.isAssignableFrom(typeClazz) && !Map.class.isAssignableFrom(typeClazz)) {
+                int modifiers = field.getModifiers();
+                if (field.getName().indexOf(36) == -1 && !Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers)) {
+
+                }
+            }
+        }
+        return obj;
     }
 
     /**
@@ -157,25 +171,33 @@ public abstract class BaseEntity<ID extends Serializable> implements Serializabl
     }
 
     /**
+     * 设置ID
+     *
+     * @param id ID
+     */
+    public void setId(ID id) {
+        this.id = (ID)id.toString().replace("-", "");
+    }
+
+    /**
      * 重写toString方法
      *
      * @return 字符串
      */
     @Override
     public String toString() {
-        ToStringBuilder builder = new ToStringBuilder(this);
+        ToStringBuilder builder = new ToStringBuilder(this.getClass().getSimpleName());
         Iterator var3 = ClassUtils.getDeclaredFieldsWithSuper(this.getClass()).values().iterator();
 
         while (var3.hasNext()) {
             Field field = (Field) var3.next();
-            //基类
             Class<? extends Object> typeClazz = field.getType();
-//            if (!AbstractEntity.class.isAssignableFrom(typeClazz) && !Collection.class.isAssignableFrom(typeClazz) && !Map.class.isAssignableFrom(typeClazz)) {
-//                int modifiers = field.getModifiers();
-//                if (field.getName().indexOf(36) == -1 && !Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers)) {
+            if (!AbstractEntity.class.isAssignableFrom(typeClazz) && !Collection.class.isAssignableFrom(typeClazz) && !Map.class.isAssignableFrom(typeClazz)) {
+                int modifiers = field.getModifiers();
+                if (field.getName().indexOf(36) == -1 && !Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers)) {
                     builder.append(field.getName(), ClassUtils.forceGetProperty(this, field.getName()));
-//                }
-//            }
+                }
+            }
         }
         return builder.toString();
     }
@@ -222,7 +244,7 @@ public abstract class BaseEntity<ID extends Serializable> implements Serializabl
         hashCode += getId() != null ? getId().hashCode() * 31 : 0;
         return hashCode;
     }
-
+    
     /**
      * 保存验证组
      */
@@ -234,13 +256,6 @@ public abstract class BaseEntity<ID extends Serializable> implements Serializabl
      * 更新验证组
      */
     public interface Update extends Default {
-
-    }
-
-    /**
-     * 基础视图
-     */
-    public interface BaseView {
 
     }
 

@@ -6,6 +6,11 @@
 </head>
 <body>
     <div>
+        <#list userRelation as ur>
+            <input type="radio" name="${ur.name}">
+        </#list>
+    </div>
+    <div>
         <ul>
             <li>anymore</li>
             <li>特定用户组</li>

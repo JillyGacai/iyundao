@@ -234,4 +234,43 @@ public class User extends BaseEntity<String> {
         this.remark = remark;
     }
 
+    public Set<UserRelation> getUserRelations() {
+        return userRelations;
+    }
+
+    public void setUserRelations(Set<UserRelation> userRelations) {
+        this.userRelations = userRelations;
+    }
+
+    public Set<UserGroupRelation> getUserGroupRelations() {
+        return userGroupRelations;
+    }
+
+    public void setUserGroupRelations(Set<UserGroupRelation> userGroupRelations) {
+        this.userGroupRelations = userGroupRelations;
+    }
+
+    public Set<UserRole> getUserRoles() {
+        return userRoles;
+    }
+
+    public void setUserRoles(Set<UserRole> userRoles) {
+        this.userRoles = userRoles;
+    }
+
+    public Set<Depart> getDeparts() {
+        return departs;
+    }
+
+    public void setDeparts(Set<Depart> departs) {
+        this.departs = departs;
+    }
+
+    public Set<Groups> getGroups() {
+        return groups;
+    }
+
+    public void setGroups(Set<Groups> groups) {
+        this.groups = groups;
+    }
 }

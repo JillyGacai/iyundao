@@ -83,4 +83,44 @@ public class UserRelation extends BaseEntity<String> {
      */
     @Column(name = "INFO5")
     private String info5;
+
+    public Subject getSubject() {
+        return subject;
+    }
+
+    public void setSubject(Subject subject) {
+        this.subject = subject;
+    }
+
+    public Depart getDepart() {
+        return depart;
+    }
+
+    public void setDepart(Depart depart) {
+        this.depart = depart;
+    }
+
+    public Groups getGroups() {
+        return groups;
+    }
+
+    public void setGroups(Groups groups) {
+        this.groups = groups;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Set<MenuRelation> getMenuRelations() {
+        return menuRelations;
+    }
+
+    public void setMenuRelations(Set<MenuRelation> menuRelations) {
+        this.menuRelations = menuRelations;
+    }
 }

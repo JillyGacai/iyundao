@@ -82,4 +82,43 @@ public class UserGroupRelation extends BaseEntity<String> {
     @Column(name = "INFO5")
     private String info5;
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public UserGroup getUserGroup() {
+        return userGroup;
+    }
+
+    public void setUserGroup(UserGroup userGroup) {
+        this.userGroup = userGroup;
+    }
+
+    public Set<MenuRelation> getMenuRelations() {
+        return menuRelations;
+    }
+
+    public void setMenuRelations(Set<MenuRelation> menuRelations) {
+        this.menuRelations = menuRelations;
+    }
+
+    public Set<FieldRole> getFieldRoles() {
+        return fieldRoles;
+    }
+
+    public void setFieldRoles(Set<FieldRole> fieldRoles) {
+        this.fieldRoles = fieldRoles;
+    }
+
+    public Set<ButtonRole> getButtonRoles() {
+        return buttonRoles;
+    }
+
+    public void setButtonRoles(Set<ButtonRole> buttonRoles) {
+        this.buttonRoles = buttonRoles;
+    }
 }

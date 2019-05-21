@@ -76,4 +76,36 @@ public class UserRole extends BaseEntity<String> {
      */
     @Column(name = "INFO5")
     private String info5;
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    public Set<FieldRole> getFieldRoles() {
+        return fieldRoles;
+    }
+
+    public void setFieldRoles(Set<FieldRole> fieldRoles) {
+        this.fieldRoles = fieldRoles;
+    }
+
+    public Set<ButtonRole> getButtonRoles() {
+        return buttonRoles;
+    }
+
+    public void setButtonRoles(Set<ButtonRole> buttonRoles) {
+        this.buttonRoles = buttonRoles;
+    }
 }

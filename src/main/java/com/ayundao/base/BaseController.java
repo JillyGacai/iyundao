@@ -1,28 +1,36 @@
 package com.ayundao.base;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
+import java.lang.reflect.Method;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 
+
 import com.ayundao.base.annotation.Permission;
-import com.ayundao.base.utils.RedisUtils;
-import com.ayundao.base.utils.SpringUtils;
+import com.ayundao.base.exception.AuthenticationException;
+import com.ayundao.base.utils.*;
 import com.ayundao.entity.User;
-import com.ayundao.service.RedisServcie;
-import com.sun.deploy.net.HttpResponse;
+import com.ayundao.entity.UserGroupRelation;
+import com.ayundao.entity.UserRelation;
+import com.ayundao.entity.UserRole;
+import com.ayundao.service.UserGroupRelationService;
+import com.ayundao.service.UserRelationService;
+import com.ayundao.service.UserRoleService;
+import com.ayundao.service.UserService;
+import org.hibernate.usertype.UserType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpRequest;
+import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Controller;
-import org.springframework.util.Assert;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.context.annotation.SessionScope;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 
@@ -80,10 +88,27 @@ public abstract class BaseController {
     protected static final String AUTHOR_SUBJECT ="subject";
     @Value("${server.salt}")
     private String salt;
+
     @Autowired
     private RedisUtils redisUtils;
 
+    @Autowired
+    private UserRelationService userRelationService;
+
+    @Autowired
+    private UserRoleService userRoleService;
+
+    @Autowired
+    private UserGroupRelationService userGroupRelationService;
+
+    @Autowired
+    private UserService userService;
+
+    private String account;
+
     private User user;
+
+
 
     /**
      * 数据验证
@@ -177,8 +202,15 @@ public abstract class BaseController {
      * @param args               参数
      */
     protected void addFlashMessage(RedirectAttributes redirectAttributes, String message, Object... args) {
-
         redirectAttributes.addFlashAttribute(FLASH_MESSAGE_ATTRIBUTE_NAME, SpringUtils.getMessage(message, args));
+    }
+
+    /**
+     * 授权登录异常
+     */
+    @ExceptionHandler({AuthenticationException.class})
+    public String authenticationException() {
+        return "index";
     }
 
     /**
@@ -191,21 +223,74 @@ public abstract class BaseController {
      */
     public User setCurrentUser(HttpServletRequest req, HttpServletResponse resp, User user) {
         //用户信息
-        redisUtils.set("user:" + user.getAccount(), user);
-        req.setAttribute("account", user.getAccount());
-        req.setAttribute("user", user);
-        setUser(user);
+        account = user.getAccount();
+        account = EncryptUtils.DESencode(account, salt);
+        redisUtils.set("user:" + account, JsonUtils.getJson(user));
+        req.setAttribute(account, account);
         //机构信息
+        List<UserRelation> userRelation = userRelationService.findByUser(user);
+        user.setUserRelations(new HashSet<>(userRelation));
 
         //用户组信息
+        List<UserGroupRelation> userGroupRelations = userGroupRelationService.findByUser(user);
+        user.setUserGroupRelations(new HashSet<>(userGroupRelations));
+
+        //角色信息
+        List<UserRole> userRoles = userRoleService.findByUser(user);
+        user.setUserRoles(new HashSet<>(userRoles));
+        setUser(user);
+        req.getSession().setAttribute("i-YunDao-account", account);
         return this.user;
     }
 
+
     public User getUser() {
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        HttpServletRequest request = attributes.getRequest();
+        if (request.getSession().getAttribute("i-YunDao-account") == null) {
+            return null;
+        } 
+        account = request.getSession().getAttribute("i-YunDao-account").toString();
+        user = user == null ? new User() : user;
+        user = redisUtils.get("user:" + account) != null
+                ? toUser(redisUtils.get("user:" + account).toString())
+                : null;
+        if (user == null) {
+            user = userService.findByAccount(EncryptUtils.DESdecode(account, salt));
+        } 
+        return user;
+    }
+
+    private User toUser(String str) {
+        try {
+            JSONObject json = new JSONObject(str);
+            user.setId(json.get("id").toString());
+            user.setAccount(json.get("account").toString());
+            user.setName(json.get("name").toString());
+            user.setRemark(json.get("remark").toString());
+            user.setSalt(json.get("salt").toString());
+            user.setPassword(json.get("password").toString());
+            user.setSex(Integer.parseInt(json.get("sex").toString()));
+            for (User.USER_TYPE type : User.USER_TYPE.values()) {
+                if (type.toString().equals(json.get("userType").toString())) {
+                    user.setUserType(type);
+                    break;
+                } 
+            }
+            for (User.ACCOUNT_TYPE type : User.ACCOUNT_TYPE.values()) {
+                if (type.toString().equals(json.get("status").toString())) {
+                    user.setStatus(type);
+                    break;
+                } 
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         return user;
     }
 
     public void setUser(User user) {
         this.user = user;
     }
+
 }
