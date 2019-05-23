@@ -2,19 +2,14 @@ package com.ayundao.controller;
 
 import com.ayundao.base.BaseController;
 import com.ayundao.base.utils.EncryptUtils;
-import com.ayundao.base.utils.JsonUtils;
 import com.ayundao.entity.User;
 import com.ayundao.service.RedisServcie;
 import com.ayundao.service.UserService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.configurationprocessor.json.JSONException;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -54,6 +49,7 @@ public class IndexController extends BaseController {
      */
     @PostMapping("/login")
     public String login(String account, String password, Model model, HttpServletRequest req, HttpServletResponse resp) {
+        //TODO 取消注释
         User user = getUser();
         if (user != null) {
             return "redirect:/subject/list";
@@ -75,7 +71,6 @@ public class IndexController extends BaseController {
         }
         return "index";
     }
-
 
     /**
      * 注册

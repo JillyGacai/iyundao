@@ -91,4 +91,5 @@ public class Role extends BaseEntity<String> {
     public void setUserRoles(Set<UserRole> userRoles) {
         this.userRoles = userRoles;
     }
+
 }

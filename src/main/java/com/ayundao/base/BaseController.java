@@ -1,6 +1,5 @@
 package com.ayundao.base;
 
-import java.lang.reflect.Method;
 import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -9,26 +8,19 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 
 
-import com.ayundao.base.annotation.Permission;
-import com.ayundao.base.exception.AuthenticationException;
 import com.ayundao.base.utils.*;
-import com.ayundao.entity.User;
-import com.ayundao.entity.UserGroupRelation;
-import com.ayundao.entity.UserRelation;
-import com.ayundao.entity.UserRole;
+import com.ayundao.entity.*;
 import com.ayundao.service.UserGroupRelationService;
 import com.ayundao.service.UserRelationService;
 import com.ayundao.service.UserRoleService;
 import com.ayundao.service.UserService;
-import org.hibernate.Session;
-import org.hibernate.usertype.UserType;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.context.annotation.SessionScope;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -43,29 +35,15 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
  * @Description: Controller - 基类
  * @Version: V1.0
  */
-@Permission
 @Component
 public abstract class BaseController {
 
-    /**
-     * 角色验证
-     */
-    protected static final String AUTHOR_ROLE ="role";
 
     /**
      * 错误消息
      */
     protected static final String ERROR_MESSAGE = "common.message.error";
 
-    /**
-     * 成功消息
-     */
-    protected static final String SUCCESS_MESSAGE = "common.message.success";
-
-    /**
-     * 请求无法处理视图
-     */
-    protected static final String UNPROCESSABLE_ENTITY_VIEW = "common/error/unprocessable_entity";
 
     /**
      * "瞬时消息"属性名称
@@ -79,14 +57,6 @@ public abstract class BaseController {
 
     @Autowired
     private Validator validator;
-    /**
-     * 用户组验证
-     */
-    protected static final String AUTHOR_USER_GROUP ="user.group";
-    /**
-     * 机构验证
-     */
-    protected static final String AUTHOR_SUBJECT ="subject";
     @Value("${server.salt}")
     private String salt;
 
@@ -109,6 +79,13 @@ public abstract class BaseController {
 
     private User user;
 
+    private static final String USER_INFO = ":userInfo";
+
+    private static final String USER_SUBJECT = ":subject";
+
+    private static final String USER_GROUP = ":userGroup";
+
+    private static final String USER_ROLE = ":role";
 
 
     /**
@@ -119,7 +96,6 @@ public abstract class BaseController {
      * @return 验证结果
      */
     protected boolean isValid(Object target, Class<?>... groups) {
-
         Set<ConstraintViolation<Object>> constraintViolations = validator.validate(target, groups);
         if (constraintViolations.isEmpty()) {
             return true;
@@ -207,14 +183,6 @@ public abstract class BaseController {
     }
 
     /**
-     * 授权登录异常
-     */
-    @ExceptionHandler({AuthenticationException.class})
-    public String authenticationException() {
-        return "index";
-    }
-
-    /**
      * 存储当前用户
      *
      * @param req
@@ -226,22 +194,63 @@ public abstract class BaseController {
         //用户信息
         account = user.getAccount();
         account = EncryptUtils.DESencode(account, salt);
-        redisUtils.set("user:" + account, JsonUtils.getJson(user));
         req.setAttribute(account, account);
-        //机构信息
-        List<UserRelation> userRelation = userRelationService.findByUser(user);
-        user.setUserRelations(new HashSet<>(userRelation));
+        String[] ids = null;
 
-        //用户组信息
-        List<UserGroupRelation> userGroupRelations = userGroupRelationService.findByUser(user);
-        user.setUserGroupRelations(new HashSet<>(userGroupRelations));
+        try {
+            //机构信息
+            List<UserRelation> userRelation = userRelationService.findByUser(user);
+            JSONArray arr = new JSONArray();
+            for (UserRelation relation : userRelation) {
+                JSONObject json = new JSONObject();
+                json.put("id", relation.getId());
+                json.put("depart", relation.getDepart() != null ? relation.getDepart().getId() : "");
+                json.put("groups", relation.getGroups() != null ? relation.getDepart().getId() : "");
+                if (!CollectionUtils.isEmpty(relation.getMenuRelations())) {
+                    JSONArray menus = new JSONArray();
+                    for (MenuRelation menu : relation.getMenuRelations()) {
+                        JSONObject mj = new JSONObject();
+                        mj.put("id", menu.getId());
+                        mj.put("userGroup", menu.getUserGroupRelation() != null ? menu.getUserGroupRelation().getId() : "");
+                        mj.put("role", menu.getRole() != null ? menu.getRole().getId() : "");
+                        menus.put(mj);
+                    }
+                }
+                arr.put(json);
+            }
+            redisUtils.set(account + USER_SUBJECT, arr.toString(), 3600);
+            //用户组信息
+            List<UserGroupRelation> userGroupRelations = userGroupRelationService.findByUser(user);
+            saveRelations(userGroupRelations, USER_GROUP);
 
-        //角色信息
-        List<UserRole> userRoles = userRoleService.findByUser(user);
-        user.setUserRoles(new HashSet<>(userRoles));
+            //角色信息
+            List<UserRole> userRoles = userRoleService.findByUser(user);
+            String role = "subject.manager, admin";
+            redisUtils.set(account + USER_ROLE, role);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+
         setUser(user);
+        redisUtils.set(account+USER_INFO, JsonUtils.getJson(user));
         req.getSession().setAttribute("i-YunDao-account", account);
         return this.user;
+    }
+
+    /**
+     * 存储用户关系
+     * @param list
+     */
+    private void saveRelations(List<? extends BaseEntity> list, String name) {
+        if (!list.isEmpty()) {
+            String[] ids =  new String[list.size()];
+            for (int i = 0; i < ids.length; i++) {
+                ids[i] = (String) list.get(i).getId();
+            }
+            redisUtils.set(account + name, JsonUtils.toJson(ids));
+        }
     }
 
 
@@ -253,8 +262,8 @@ public abstract class BaseController {
         } 
         account = request.getSession().getAttribute("i-YunDao-account").toString();
         user = user == null ? new User() : user;
-        user = redisUtils.get("user:" + account) != null
-                ? toUser(redisUtils.get("user:" + account).toString())
+        user = redisUtils.get(account+USER_INFO) != null
+                ? toUser(redisUtils.get(account+USER_INFO).toString())
                 : null;
         if (user == null) {
             user = userService.findByAccount(EncryptUtils.DESdecode(account, salt));
