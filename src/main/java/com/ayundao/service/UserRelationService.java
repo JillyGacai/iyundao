@@ -21,4 +21,11 @@ public interface UserRelationService {
      * @return
      */
     List<UserRelation> findByUser(User user);
+
+    /**
+     * 根据ID超找用户机构关系
+     * @param id
+     * @return
+     */
+    List<UserRelation> findByUserId(String id);
 }

@@ -2,6 +2,7 @@ package com.ayundao.repository;
 
 import com.ayundao.entity.User;
 import com.ayundao.entity.UserRelation;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -19,4 +20,6 @@ import java.util.List;
 public interface UserRelationRepository extends CrudRepository<UserRelation, String> {
 
     List<UserRelation> findByUser(User user);
+
+    List<UserRelation> findByUserId(String id);
 }

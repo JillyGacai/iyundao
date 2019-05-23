@@ -10,14 +10,10 @@ import javax.validation.Validator;
 
 import com.ayundao.base.utils.*;
 import com.ayundao.entity.*;
-import com.ayundao.service.UserGroupRelationService;
-import com.ayundao.service.UserRelationService;
-import com.ayundao.service.UserRoleService;
-import com.ayundao.service.UserService;
+import com.ayundao.service.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Component;
@@ -64,16 +60,19 @@ public abstract class BaseController {
     private RedisUtils redisUtils;
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
     private UserRelationService userRelationService;
 
     @Autowired
-    private UserRoleService userRoleService;
+    private MenuRelationService menuRelationService;
 
     @Autowired
     private UserGroupRelationService userGroupRelationService;
 
     @Autowired
-    private UserService userService;
+    private UserRoleService userRoleService;
 
     private String account;
 
@@ -197,42 +196,6 @@ public abstract class BaseController {
         req.setAttribute(account, account);
         String[] ids = null;
 
-        try {
-            //机构信息
-            List<UserRelation> userRelation = userRelationService.findByUser(user);
-            JSONArray arr = new JSONArray();
-            for (UserRelation relation : userRelation) {
-                JSONObject json = new JSONObject();
-                json.put("id", relation.getId());
-                json.put("depart", relation.getDepart() != null ? relation.getDepart().getId() : "");
-                json.put("groups", relation.getGroups() != null ? relation.getDepart().getId() : "");
-                if (!CollectionUtils.isEmpty(relation.getMenuRelations())) {
-                    JSONArray menus = new JSONArray();
-                    for (MenuRelation menu : relation.getMenuRelations()) {
-                        JSONObject mj = new JSONObject();
-                        mj.put("id", menu.getId());
-                        mj.put("userGroup", menu.getUserGroupRelation() != null ? menu.getUserGroupRelation().getId() : "");
-                        mj.put("role", menu.getRole() != null ? menu.getRole().getId() : "");
-                        menus.put(mj);
-                    }
-                }
-                arr.put(json);
-            }
-            redisUtils.set(account + USER_SUBJECT, arr.toString(), 3600);
-            //用户组信息
-            List<UserGroupRelation> userGroupRelations = userGroupRelationService.findByUser(user);
-            saveRelations(userGroupRelations, USER_GROUP);
-
-            //角色信息
-            List<UserRole> userRoles = userRoleService.findByUser(user);
-            String role = "subject.manager, admin";
-            redisUtils.set(account + USER_ROLE, role);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-
-
         setUser(user);
         redisUtils.set(account+USER_INFO, JsonUtils.getJson(user));
         req.getSession().setAttribute("i-YunDao-account", account);
@@ -314,5 +277,39 @@ public abstract class BaseController {
         setUser(null);
         this.user = null;
     }
+
+    /**
+     * 机构关系
+     * @param user
+     */
+    public List<UserRelation> getUserRelation(User user) {
+        List<UserRelation> userRelations = userRelationService.findByUserId(user.getId());
+        return userRelations;
+    }
+
+    /**
+     * 用户组关系
+     * @param user
+     */
+    public List<UserGroupRelation> getUserGroupRelation(User user) {
+        return null;
+    }
+
+    /**
+     * 菜单关系
+     * @param user
+     */
+    public List<MenuRelation> getMenuRelation(User user) {
+        return null;
+    }
+
+    /**
+     * 个人角色
+     * @param user
+     */
+    public List<UserRole> getUserRole(User user) {
+        return null;
+    }
+
 
 }
